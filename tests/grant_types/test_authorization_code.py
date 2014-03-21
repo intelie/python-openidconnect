@@ -8,8 +8,10 @@ from oidclib.grant_types import AuthorizationCodeGrant
 from oidclib.validator import OIDConnectValidator
 from oidclib import errors as oidc_errors
 
+from ..utils import BaseTest
 
-class TestAuthorizationCodeGrant(object):
+
+class TestAuthorizationCodeGrant(BaseTest):
     def setup(self):
         self.validator = OIDConnectValidator()
         self.validator.validate_client_id = mock.Mock()
@@ -17,26 +19,6 @@ class TestAuthorizationCodeGrant(object):
         self.validator.get_default_scopes = mock.Mock()
         self.validator.get_default_scopes.return_value = 'read write'
         self.auth = AuthorizationCodeGrant(request_validator=self.validator)
-
-    def set_client(self, request):
-        request.client = mock.MagicMock()
-        request.client.client_id = 'mocked'
-        return True
-
-    def make_request(self, response_type='code',
-            scope='openid profile email'):
-        request = Request('https://a.b/path')
-
-        request.scope = scope
-        request.client = 'superman'
-        request.client_id = 'abcdef'
-        request.redirect_uri = 'https://a.b/'
-        request.response_type = response_type
-
-        return request
-
-    def assertListEqual(self, list1, list2):
-        return sorted(list1) == sorted(list2)
 
     def test_request_missing_openid_scope(self):
         request = Request('https://a.b/path')
