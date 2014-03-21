@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from oauthlib.oauth2.rfc6749.errors import Oauth2Error
+from oauthlib.oauth2.rfc6749.errors import OAuth2Error
 
 
 class OpenIDScopeError(OAuth2Error):
