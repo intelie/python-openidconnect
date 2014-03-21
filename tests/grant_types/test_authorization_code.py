@@ -35,6 +35,9 @@ class TestAuthorizationCodeGrant(object):
 
         return request
 
+    def assertListEqual(self, list1, list2):
+        return sorted(list1) == sorted(list2)
+
     def test_request_missing_openid_scope(self):
         request = Request('https://a.b/path')
         with pytest.raises(oidc_errors.OpenIDScopeError):
@@ -72,5 +75,3 @@ class TestAuthorizationCodeGrant(object):
         self.validator.validate_redirect_uri\
                 .assert_called_once_with(request.client_id, request.redirect_uri, request)
 
-    def assertListEqual(self, list1, list2):
-        return sorted(list1) == sorted(list2)
