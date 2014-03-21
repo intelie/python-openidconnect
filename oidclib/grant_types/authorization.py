@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 from oauthlib.oauth2.rfc6749 import errors
-from oauthlib.oauth2.rfc6749.grant_types.base import GrantTypeBase
+from oauthlib.oauth2.rfc6749.grant_types.authorization_code import \
+        AuthorizationCodeGrant as OAuthlibAuthorizationCodeGrant
 from oauthlib.uri_validate import is_absolute_uri
 
 
-class AuthorizationCodeGrant(GrantTypeBase):
-    def __init__(self, request_validator):
-        self.request_validator = request_validator
-
+class AuthorizationCodeGrant(OAuthlibAuthorizationCodeGrant):
     def validate_authorization_request(self, request):
         # TODO there's still a lot of work to do,
         # TODO see oauth2.rfc6749.grant_types.authorization_code.AuthorizationCodeGrant#validate_authorization_request
