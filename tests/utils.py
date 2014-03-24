@@ -22,3 +22,10 @@ class BaseTest(object):
 
     def assertListEqual(self, list1, list2):
         return sorted(list1) == sorted(list2)
+
+    def assertHasKeys(self, _dict, keys):
+        keys = set(keys)
+        dictkeys = set(_dict.keys())
+
+        assert keys.issubset(dictkeys),\
+               "Missing keys: %s" % ', '.join(keys.difference(dictkeys))
