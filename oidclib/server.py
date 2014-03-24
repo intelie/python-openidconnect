@@ -17,15 +17,17 @@ class OpenIDConnectServer(AuthorizationEndpoint, TokenEndpoint):
         bearer = BearerToken(request_validator, token_generator,
                 expires_in=token_expires_in)
 
-        # initializer of all mixins
         AuthorizationEndpoint.__init__(self, default_response_type='code',
                 response_types={
-                    'auth': auth_grant  # implicit and hybrid
+                    'auth': auth_grant,
+                    # implicit
+                    # hybrid
+
                 },
                 default_token_type=bearer)
         TokenEndpoint.__init__(self, default_grant_type='authorization_code',
                 grant_types={
-                    'auth': auth_grant
+                    'authorization_code': auth_grant,
                 },
                 default_token_type=bearer)
 
