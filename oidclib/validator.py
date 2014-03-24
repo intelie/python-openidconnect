@@ -17,5 +17,21 @@ class OIDConnectValidator(RequestValidator):
 
         return True
 
-    def get_default_redirect_uri(self, client_id, request):
-        pass
+    def save_authorization_code(self, *args, **kwargs):
+        """Implementers of the OIDC Server must implement
+        this method and check if 'openid' is one of the scopes,
+        saving it accordingly.
+        """
+        return super(OIDConnectValidator, self).save_authorization_code(*args, **kwargs)
+
+    def get_client_secret(self, client_id, request):
+        raise NotImplementedError('Subclasses must implement this method.')
+
+    def get_audience(self, client_id, request):
+        raise NotImplementedError('Subclasses must implement this method.')
+
+    def get_issuer(self, client_id, request):
+        raise NotImplementedError('Subclasses must implement this method.')
+
+    def get_subject(self, client_id, request):
+        raise NotImplementedError('Subclasses must implement this method.')
