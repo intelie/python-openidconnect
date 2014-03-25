@@ -9,7 +9,7 @@ class BaseTest(object):
         return True
 
     def make_request(self, response_type='code',
-            scope='openid profile email'):
+            scope='openid profile email', **kwargs):
         request = Request('https://a.b/path')
 
         request.scope = scope
@@ -17,6 +17,9 @@ class BaseTest(object):
         request.client_id = 'abcdef'
         request.redirect_uri = 'https://a.b/'
         request.response_type = response_type
+
+        for prop, val in kwargs.items():
+            setattr(request, prop, val)
 
         return request
 
