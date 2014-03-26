@@ -36,6 +36,18 @@ class TestOIDCToken(BaseTest):
         self.assertHasKeys(token, expected_keys)
         self.validator.save_bearer_token.assert_called_with(token, request)
 
+    def test_create_bearer_token_implicit_response_type(self):
+        request = self.make_request(response_type='id_token')
+        token = self.bearer.create_token(request, refresh_token=True)
+
+        assert 'access_token' not in token
+
+    def test_create_bearer_token_implicit_response_type_with_token(self):
+        request = self.make_request(response_type='id_token token')
+        token = self.bearer.create_token(request)
+
+        assert 'access_token' in token
+
     def test_create_id_token(self):
         id_token = self.bearer.create_id_token(self.request)
         payload = jwt.decode(id_token, self.SECRET)
@@ -54,9 +66,11 @@ class TestOIDCToken(BaseTest):
                 self.request.client_id, self.request)
         assert payload['aud'] == [self.request.client_id]
 
-    def test_create_id_token_nonce(self):
-        id_token = self.bearer.create_id_token(self.request, nonce='12345')
+    def test_create_id_token__nonce(self):
+        request = self.make_request(nonce='12345')
+        id_token = self.bearer.create_id_token(request)
         payload = jwt.decode(id_token, self.SECRET)
 
         assert 'nonce' in payload
         assert payload['nonce'] == '12345'
+

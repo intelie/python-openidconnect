@@ -8,13 +8,14 @@ from oauthlib.oauth2.rfc6749.tokens import BearerToken
 
 class OIDCToken(BearerToken):
     def create_token(self, request, refresh_token=False):
-
         token = {
-            'access_token': self.token_generator(request),
             'expires_in': self.expires_seconds(request),
             'token_type': 'Bearer',
             'id_token': self.create_id_token(request)
         }
+
+        if self.include_access_token(request):
+            token['access_token'] = self.token_generator(request)
 
         if request.scopes is not None:
             token['scope'] = ' '.join(request.scopes)
@@ -35,19 +36,28 @@ class OIDCToken(BearerToken):
         self.request_validator.save_bearer_token(token, request)
         return token
 
-    def create_id_token(self, request, **kwargs):
+    def create_id_token(self, request):
         payload = {
             'iss': self.request_validator.get_issuer(request.client_id, request),
             'sub': self.request_validator.get_subject(request.client_id, request),
             'aud': self.request_validator.get_audience(request.client_id, request),
             'iat': datetime.utcnow()
         }
-        payload.update(kwargs)
+
+        if request.nonce:
+            payload['nonce'] = request.nonce
 
         payload['exp'] = payload['iat'] + timedelta(seconds=self.expires_seconds(request))
 
         secret = self.request_validator.get_client_secret(request.client_id, request)
         return jwt.encode(payload, secret)
+
+    def include_access_token(self, request):
+        """
+        access_token should be included only when response_type is "code"
+        or has "token" included.
+        """
+        return request.response_type == 'code' or 'token' in request.response_type.split()
 
     def expires_seconds(self, request=None):
         if callable(self.expires_in):
