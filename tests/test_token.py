@@ -53,3 +53,10 @@ class TestOIDCToken(BaseTest):
         self.validator.get_audience.assert_called_with(
                 self.request.client_id, self.request)
         assert payload['aud'] == [self.request.client_id]
+
+    def test_create_id_token_nonce(self):
+        id_token = self.bearer.create_id_token(self.request, nonce='12345')
+        payload = jwt.decode(id_token, self.SECRET)
+
+        assert 'nonce' in payload
+        assert payload['nonce'] == '12345'

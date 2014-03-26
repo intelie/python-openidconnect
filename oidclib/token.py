@@ -35,13 +35,14 @@ class OIDCToken(BearerToken):
         self.request_validator.save_bearer_token(token, request)
         return token
 
-    def create_id_token(self, request):
+    def create_id_token(self, request, **kwargs):
         payload = {
             'iss': self.request_validator.get_issuer(request.client_id, request),
             'sub': self.request_validator.get_subject(request.client_id, request),
             'aud': self.request_validator.get_audience(request.client_id, request),
             'iat': datetime.utcnow()
         }
+        payload.update(kwargs)
 
         payload['exp'] = payload['iat'] + timedelta(seconds=self.expires_seconds(request))
 
