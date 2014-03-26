@@ -5,7 +5,6 @@ from oauthlib.common import Request
 from oauthlib.oauth2.rfc6749 import errors
 
 from oidclib.grant_types import AuthorizationCodeGrant
-from oidclib.validator import OIDConnectValidator
 from oidclib import errors as oidc_errors
 
 from ..utils import BaseTest
@@ -13,15 +12,14 @@ from ..utils import BaseTest
 
 class TestAuthorizationCodeGrant(BaseTest):
     def setup(self):
-        self.validator = OIDConnectValidator()
-        self.validator.validate_client_id = mock.Mock()
-        self.validator.validate_redirect_uri = mock.Mock()
-        self.validator.get_default_scopes = mock.Mock()
+        self.validator = mock.MagicMock()
         self.validator.get_default_scopes.return_value = 'read write'
         self.auth = AuthorizationCodeGrant(request_validator=self.validator)
 
     def test_request_missing_openid_scope(self):
+        self.validator.validate_scopes.side_effect = oidc_errors.OpenIDScopeError()
         request = Request('https://a.b/path')
+
         with pytest.raises(oidc_errors.OpenIDScopeError):
             self.auth.validate_authorization_request(request)
 
@@ -57,3 +55,31 @@ class TestAuthorizationCodeGrant(BaseTest):
         self.validator.validate_redirect_uri\
                 .assert_called_once_with(request.client_id, request.redirect_uri, request)
 
+    def test_validate_token_request_unsupported_grant_type(self):
+        request = self.make_request()
+
+        with pytest.raises(errors.UnsupportedGrantTypeError):
+            self.auth.validate_token_request(request)
+
+    def test_validate_token_request_missing_code(self):
+        request = self.make_request(grant_type='authorization_code')
+
+        with pytest.raises(errors.InvalidRequestError):
+            self.auth.validate_token_request(request)
+
+    def test_validate_token_request_valid(self):
+        request = self.make_request(grant_type='authorization_code', code='12345')
+        self.validator.validate_grant_type.return_value = True
+        self.validator.validate_code.return_value = True
+        self.validator.client_authentication_required.return_value = True
+        self.validator.authenticate_client.side_effect = self._authenticate
+
+        self.auth.validate_token_request(request)
+        self.validator.validate_grant_type.assert_called_with(
+                request.client_id, request.grant_type, request.client, request)
+
+    def _authenticate(self, request):
+        request.user = mock.MagicMock()
+        request.client = mock.MagicMock()
+        request.client.client_id = 'mocked_client_id'
+        return True
