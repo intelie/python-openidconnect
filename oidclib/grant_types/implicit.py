@@ -31,19 +31,14 @@ class ImplicitGrant(GrantTypeMixin, OAuthlibImplicitGrant):
         }, None, 302
 
     def validate_token_request(self, request):
-        # REQUIRED, client needs to be authenticated
         self.validate_client(request)
 
-        # REQUIRED, 'openid' should be listed
         self.validate_scopes(request)
 
-        # REQUIRED, response_type should be either 'id_token token' or 'id_token'
         self.validate_response_type(request, 'id_token', 'id_token token')
 
-        # REQUIRED, nonce should be passed on request
         self.validate_nonce(request)
 
-        # REQUIRED, redirect_uri must be set
         self.validate_redirect_uri(request)
 
         return request.scopes, {

@@ -11,7 +11,6 @@ class OpenIDConnectServer(AuthorizationEndpoint, TokenEndpoint):
             token_generator=None, *args, **kwargs):
         auth_grant = AuthorizationCodeGrant(request_validator)
         implicit_grant = ImplicitGrant(request_validator)
-        # implicit_grant
         # hybrid_grant
 
         # refresh, etc
