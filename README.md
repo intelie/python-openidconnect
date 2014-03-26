@@ -7,7 +7,7 @@ An implementation of [OpenID Connect][1] for Python, on top of [OAuthlib][2].
 IMPLEMENTATION DETAILS
 ----------------------
 
-*Oidclib* defines a new server, `OpenIDConnectServer`, which replaces entirely
+*Oidclib* defines a new server, `OpenIDConnectServer`, which replaces 
 oauthlib's pre-configured server. Note that this server **can only** handle
 OIDC requests, i.e., it will fail with regular OAuth2 requests. A full-featured
 server is on the planning, though.
@@ -41,7 +41,7 @@ class, it only handles the REQUIRED parts of the spec, for now.
 VALIDATOR
 ---------
 
-A custom validator had to be created because of some new implementation-specific
+A custom validator had to be created due to some new implementation-specific
 behavior of OIDC requests. The methods are documented on `oidc.validator`. Some
 methods are new, and some are just being reimplemented to document they now
 have an extended role.
