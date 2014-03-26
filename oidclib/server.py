@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
 from oauthlib.common import Request
-from oauthlib.oauth2 import AuthorizationEndpoint
+from oauthlib.oauth2 import AuthorizationEndpoint, TokenEndpoint
 
-from oidblib.token import BearerToken
-from oidclib.grant_types import AuthorizationCodeGrant, TokenEndpoint
+from oidblib.token import OIDCToken
+from oidclib.grant_types import AuthorizationCodeGrant, ImplicitGrant
 
 
 class OpenIDConnectServer(AuthorizationEndpoint, TokenEndpoint):
     def __init__(self, request_validator, token_expires_in=None,
             token_generator=None, *args, **kwargs):
         auth_grant = AuthorizationCodeGrant(request_validator)
+        implicit_grant = ImplicitGrant(request_validator)
         # implicit_grant
         # hybrid_grant
 
         # refresh, etc
-        bearer = BearerToken(request_validator, token_generator,
+        bearer = OIDCToken(request_validator, token_generator,
                 expires_in=token_expires_in)
 
         AuthorizationEndpoint.__init__(self, default_response_type='code',
                 response_types={
                     'auth': auth_grant,
-                    # implicit
+                    'implicit': implicit_grant,
                     # hybrid
 
                 },

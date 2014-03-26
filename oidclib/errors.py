@@ -12,5 +12,13 @@ class OpenIDScopeError(OIDCError):
                    'due to the lack of the "openid" scope')
 
 
+class MissingNonceError(OIDCError):
+    error = 'missing_nonce'
+
+
+class InvalidNonceError(OIDCError):
+    error = 'invalid_nonce'
+
+
 class NotOpenIDConnectError(OIDCError):
     error = 'not_oidc_request'

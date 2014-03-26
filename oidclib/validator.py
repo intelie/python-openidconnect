@@ -35,3 +35,18 @@ class OIDConnectValidator(RequestValidator):
 
     def get_subject(self, client_id, request):
         raise NotImplementedError('Subclasses must implement this method.')
+
+    def validate_code(self, *args, **kwargs):
+        """
+        This method should validate if the code is valid AND
+        if it was issued in response to an OIDC request
+        """
+        return super(OIDConnectValidator, self).validate_code(*args, **kwargs)
+
+    def validate_nonce(self, client_id, nonce, client, request):
+        """
+        This method should return True or False if request.nonce is
+        valid (never was used before). The implementer should ensure
+        a nonce is never used twice.
+        """
+        raise NotImplementedError('Subclasses must implement this method.')
